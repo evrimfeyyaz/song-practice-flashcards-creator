@@ -1,34 +1,42 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [songName, setSongName] = useState('');
+  const [lyrics, setLyrics] = useState('');
+
+  const handleAnalyze = () => {
+    // TODO: Add analysis logic
+    console.log('Analyzing lyrics for:', songName);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex flex-col items-center p-8 gap-6">
+      <div className="w-full max-w-lg">
+        <input
+          type="text"
+          placeholder="Enter song name"
+          value={songName}
+          onChange={(e) => setSongName(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="w-full max-w-lg">
+        <textarea
+          placeholder="Enter song lyrics"
+          value={lyrics}
+          onChange={(e) => setLyrics(e.target.value)}
+          rows={10}
+          cols={50}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <button
+        onClick={handleAnalyze}
+        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+      >
+        Analyze Lyrics
+      </button>
+    </div>
   );
 }
 
