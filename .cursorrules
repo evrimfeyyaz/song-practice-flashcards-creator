@@ -1,0 +1,3 @@
+When adding comments, end them with a period.
+Use JSDocs for all functions.
+Prefer creating types for objects instead of using inline types.
