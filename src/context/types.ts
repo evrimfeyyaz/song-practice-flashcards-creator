@@ -1,3 +1,5 @@
+import { LyricsAnalysis } from "../services/types";
+
 /** 
  * Represents the basic data structure for a song.
  */
@@ -15,9 +17,11 @@ export interface SongContextType {
   /** Current step in the song analysis workflow. */
   currentStep: number;
   /** Analysis result of the song. */
-  analysisResult: any | null;
+  analysisResult: LyricsAnalysis | null;
   /** Whether analysis is currently in progress. */
   isAnalyzing: boolean;
+  /** Error message if any. */
+  error: string | null;
   /** 
    * Analyzes the current song data.
    */

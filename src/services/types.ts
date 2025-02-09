@@ -16,7 +16,7 @@ export type LyricLine = {
  * Represents the complete analysis of a song's lyrics.
  */
 export type LyricsAnalysis = {
-  /** The name of the song with translation in parentheses. */
+  /** The name of the song. */
   songName: string;
   /** Background information about the song including cultural/historical significance. */
   generalContextInformation: string;

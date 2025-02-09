@@ -8,7 +8,7 @@ import { useSongContext } from '../context/useSongContext';
  * Component for entering song title and lyrics.
  */
 export function EnterSong() {
-  const { analyzeSong, isAnalyzing } = useSongContext();
+  const { analyzeSong, isAnalyzing, error } = useSongContext();
   
   const [songTitle, setSongTitle] = useState('');
   const [lyrics, setLyrics] = useState('');
@@ -38,6 +38,9 @@ export function EnterSong() {
           rows={10}
         />
       </div>
+      {error && (
+        <div className="text-red-500 text-sm">{error}</div>
+      )}
       <Button
         onClick={handleAnalyze}
         disabled={isAnalyzeDisabled}

@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import { SongContext } from './SongContext';
 import { SongData } from './types';
 import LyricsAnalyzer from '../services/LyricsAnalyzer';
+import { LyricsAnalysis } from '../services/types';
 
 /**
  * Provider component for song-related state management.
@@ -12,12 +13,14 @@ export function SongProvider({ children }: { children: ReactNode }) {
     lyrics: ''
   });
   const [currentStep, setCurrentStep] = useState(0);
-  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<LyricsAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const analyzeSong = async (songTitle: string, lyrics: string) => {
     setSongData({songTitle, lyrics});
     setIsAnalyzing(true);
+    setError(null);
     try {
       const analyzer = new LyricsAnalyzer(import.meta.env.VITE_OPENAI_API_KEY);
       const result = await analyzer.analyzeLyrics(songTitle, lyrics);
@@ -25,7 +28,7 @@ export function SongProvider({ children }: { children: ReactNode }) {
       goToNextStep();
     } catch (error) {
       console.error('Analysis failed:', error);
-      // TODO: Add error handling here.
+      setError(error instanceof Error ? error.message : 'An unknown error occurred.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -45,6 +48,7 @@ export function SongProvider({ children }: { children: ReactNode }) {
         currentStep,
         analysisResult,
         isAnalyzing,
+        error,
         analyzeSong,
         goToNextStep,
       }}
