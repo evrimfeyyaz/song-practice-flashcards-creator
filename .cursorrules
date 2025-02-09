@@ -1,3 +1,4 @@
 When adding comments, end them with a period.
 Use JSDocs for all functions.
 Prefer creating types for objects instead of using inline types.
+When adding JSDocs for React components, omit standard props and return types (props object, children, and JSX.Element return type).

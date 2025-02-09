@@ -8,17 +8,16 @@ import { useSongContext } from '../context/useSongContext';
  * Component for entering song title and lyrics.
  */
 export function EnterSong() {
-  const { updateSongData, goToNextStep } = useSongContext();
+  const { analyzeSong, isAnalyzing } = useSongContext();
   
   const [songTitle, setSongTitle] = useState('');
   const [lyrics, setLyrics] = useState('');
 
-  const isAnalyzeDisabled = !songTitle.trim() || !lyrics.trim();
+  const isAnalyzeDisabled = !songTitle.trim() || !lyrics.trim() || isAnalyzing;
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (songTitle && lyrics) {
-      updateSongData(songTitle, lyrics);
-      goToNextStep();
+      await analyzeSong(songTitle, lyrics);
     }
   };
 
@@ -43,7 +42,7 @@ export function EnterSong() {
         onClick={handleAnalyze}
         disabled={isAnalyzeDisabled}
       >
-        Analyze Lyrics
+        {isAnalyzing ? 'Analyzing...' : 'Analyze Lyrics'}
       </Button>
     </div>
   );

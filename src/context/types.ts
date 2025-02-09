@@ -14,12 +14,14 @@ export interface SongContextType {
   songData: SongData;
   /** Current step in the song analysis workflow. */
   currentStep: number;
+  /** Analysis result of the song. */
+  analysisResult: any | null;
+  /** Whether analysis is currently in progress. */
+  isAnalyzing: boolean;
   /** 
-   * Updates the song details.
-   * @param title - The title of the song.
-   * @param lyrics - The lyrics of the song.
+   * Analyzes the current song data.
    */
-  updateSongData: (title: string, lyrics: string) => void;
+  analyzeSong: (songTitle: string, lyrics: string) => Promise<void>;
   /** 
    * Advances to the next step in the workflow.
    */

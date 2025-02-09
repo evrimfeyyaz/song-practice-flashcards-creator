@@ -1,17 +1,5 @@
 import OpenAI from 'openai';
-
-type LyricLine = {
-  line: string;
-  ipa: string;
-  translation: string;
-  literalTranslationExplanation: string;
-};
-
-type LyricsAnalysis = {
-  songName: string;
-  generalContextInformation: string;
-  lyrics: LyricLine[];
-};
+import { LyricsAnalysis } from './types';
 
 /**
  * Service for analyzing song lyrics using OpenAI API.
@@ -28,7 +16,7 @@ You always format your final response in valid JSON, without additional commenta
    * @param apiKey - OpenAI API key.
    */
   constructor(apiKey: string) {
-    this.openai = new OpenAI({ apiKey });
+    this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
   }
 
   /**
@@ -47,13 +35,18 @@ Lyrics (each line on a separate line):
 ${lyrics}
 
 Required Output:
-1. Include a "songName" field with the name of the song.
-2. A "generalContextInformation" field containing concise background or contextual information about the song (e.g., cultural or historical significance, artist/era details).
+1. Include a "songName" field with the name of the song. Type: string.
+2. A "generalContextInformation" field containing background or contextual information about the song (e.g., cultural or historical significance, artist/era details). Also include things that the person singing the song should know (the general mood of the song, etc.). If the song is sung by a character in a movie, musical, opera, etc. include the name and the mood of the character (what he/she is feeling while singing the song, etc.). Type: string.
 3. A "lyrics" array where each element represents a single line from the song and contains the following fields:
-    - "line": the original text of the line.
-    - "ipa": the International Phonetic Alphabet transcription of the line (concise but accurate).
-    - "translation": a short, natural-language translation of the line.
-    - "literalTranslationExplanation": a word-by-word (or phrase-by-phrase) breakdown explaining the literal meaning or nuances of each component.`;
+    - "line": the original text of the line. Type: string.
+    - "ipa": the International Phonetic Alphabet transcription of the line (concise but accurate). Type: string.
+    - "translation": a short, natural-language translation of the line. Type: string.
+    - "literalTranslationExplanation": a word-by-word (or phrase-by-phrase) breakdown explaining the literal meaning or nuances of each component. Type: string.
+
+Notes:
+- Don't include the lines that repeat multiple times in the lyrics array.
+- Don't include the lines that are just instrumentals.
+- Include the song name in the lyrics array as the first line.`;
   }
 
   /**
@@ -65,12 +58,13 @@ Required Output:
   public async analyzeLyrics(songName: string, lyrics: string): Promise<LyricsAnalysis> {
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: this.systemPrompt },
           { role: 'user', content: this.generateUserPrompt(songName, lyrics) }
         ],
-        temperature: 0.2
+        temperature: 0,
+        response_format: { type: 'json_object' }
       });
 
       const result = response.choices[0].message.content;
