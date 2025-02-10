@@ -1,6 +1,7 @@
 import { steps } from './constants/steps';
 import { SongProvider } from './context/SongProvider';
 import { useSongContext } from './context/useSongContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 function AppContent() {
   const { currentStep } = useSongContext();
@@ -15,9 +16,11 @@ function AppContent() {
 
 function App() {
   return (
-    <SongProvider>
-      <AppContent />
-    </SongProvider>
+    <ErrorBoundary>
+      <SongProvider>
+        <AppContent />
+      </SongProvider>
+    </ErrorBoundary>
   );
 }
 

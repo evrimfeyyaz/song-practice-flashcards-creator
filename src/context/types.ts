@@ -30,4 +30,12 @@ export interface SongContextType {
    * Advances to the next step in the workflow.
    */
   goToNextStep: () => void;
+  /** 
+   * The set of lyric line indices for which audio is currently being loaded.
+   */
+  loadingAudioLines: Set<number>;
+  /** 
+   * Generates audio for a specific lyric line.
+   */
+  generateAudioForLine: (index: number) => Promise<void>;
 }

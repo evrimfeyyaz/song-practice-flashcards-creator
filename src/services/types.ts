@@ -10,6 +10,8 @@ export type LyricLine = {
   translation: string;
   /** A word-by-word or phrase-by-phrase breakdown explaining the literal meaning. */
   literalTranslationExplanation: string;
+  /** The URL of the IPA audio file. */
+  ipaAudioUrl?: string;
 };
 
 /**
@@ -18,6 +20,8 @@ export type LyricLine = {
 export type LyricsAnalysis = {
   /** The name of the song. */
   songName: string;
+  /** The language code of the song, e.g. 'en-US', 'es-ES', 'fr-FR', etc. */
+  languageCode: string;
   /** Background information about the song including cultural/historical significance. */
   generalContextInformation: string;
   /** Array of analyzed lyrics lines. */
