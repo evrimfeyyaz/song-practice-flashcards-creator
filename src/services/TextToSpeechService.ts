@@ -33,7 +33,7 @@ class TextToSpeechService {
    */
   async synthesizeIPA(ipa: string, languageCode: string): Promise<Uint8Array> {
     const voiceId = await this.getVoiceIdForLanguage(languageCode);
-    const ssml = `<speak><phoneme alphabet="ipa" ph="${ipa}"></phoneme></speak>`;
+    const ssml = `<speak><prosody rate="x-slow"><phoneme alphabet="ipa" ph="${ipa}"></phoneme></prosody></speak>`;
     
     const response = await this.client.synthesizeSpeech({
       Text: ssml,
