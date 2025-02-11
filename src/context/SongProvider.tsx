@@ -18,6 +18,7 @@ export function SongProvider({ children }: { children: ReactNode }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingAudioLines, setLoadingAudioLines] = useState<Set<number>>(new Set());
+  const hasAudioGenerationRunRef = useRef(false);
 
   const tts = useRef<TextToSpeechService | null>(new TextToSpeechService()).current;
 
@@ -82,8 +83,11 @@ export function SongProvider({ children }: { children: ReactNode }) {
   }, [analysisResult, generateAudioForLine]);
 
   useEffect(() => {
-    generateAudioForLines();
-  }, [generateAudioForLines]);
+    if (analysisResult && !hasAudioGenerationRunRef.current) {
+      hasAudioGenerationRunRef.current = true;
+      generateAudioForLines();
+    }
+  }, [analysisResult, generateAudioForLines]);
 
   /**
    * Increment the current step.
