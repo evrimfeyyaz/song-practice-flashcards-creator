@@ -45,9 +45,11 @@ Required Output:
     - "literalTranslationExplanation": a word-by-word (or phrase-by-phrase) breakdown explaining the literal meaning or nuances of each component. Type: string.
 
 Notes:
-- Don't include the lines that repeat multiple times in the lyrics array.
+- If a line is present multiple times in the lyrics, don't include it multiple times in the lyrics array. Only include it once.
 - Don't include the lines that are just instrumentals.
-- Include the song name in the lyrics array as the first line.`;
+- Include the song name in the lyrics array as the first line.
+- If the song is a duet, include the name of the other singer in the "generalContextInformation" field.
+- And most importantly, don't skip any lines. Make sure to include all the lines in the lyrics array.`;
   }
 
   /**
