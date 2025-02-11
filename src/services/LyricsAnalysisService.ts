@@ -4,7 +4,7 @@ import { LyricsAnalysis } from './types';
 /**
  * Service for analyzing song lyrics using OpenAI API.
  */
-class LyricsAnalyzer {
+class LyricsAnalysisService {
   private openai: OpenAI;
   private readonly systemPrompt = `
 You are a multilingual linguistics and cultural expert with specialized knowledge in phonetics, language translation, and music history. 
@@ -12,7 +12,7 @@ You provide concise, clear, and accurate responses.
 You always format your final response in valid JSON, without additional commentary or explanations beyond what is requested.`;
 
   /**
-   * Creates a new LyricsAnalyzer instance.
+   * Creates a new LyricsAnalysisService instance.
    * @param apiKey - OpenAI API key.
    */
   constructor(apiKey: string) {
@@ -81,4 +81,4 @@ Notes:
   }
 }
 
-export default LyricsAnalyzer; 
+export default LyricsAnalysisService; 
