@@ -4,6 +4,7 @@ import { SongData } from './types';
 import LyricsAnalysisService from '../services/LyricsAnalysisService';
 import TextToSpeechService from '../services/TextToSpeechService';
 import { LyricsAnalysis } from '../services/types';
+import { AnkiExportService } from '../services/AnkiExportService';
 
 /**
  * Provider component for song-related state management.
@@ -96,6 +97,20 @@ export function SongProvider({ children }: { children: ReactNode }) {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
+  const exportToAnki = useCallback(async () => {
+    if (!analysisResult) {
+      setError('No analysis results to export');
+      return;
+    }
+    
+    try {
+      await AnkiExportService.exportToAnki(analysisResult);
+    } catch (error) {
+      console.error('Export failed:', error);
+      setError(error instanceof Error ? error.message : 'Failed to export to Anki');
+    }
+  }, [analysisResult]);
+
   return (
     <SongContext.Provider
       value={{
@@ -108,6 +123,7 @@ export function SongProvider({ children }: { children: ReactNode }) {
         goToNextStep,
         loadingAudioLines,
         generateAudioForLine,
+        exportToAnki,
       }}
     >
       {children}

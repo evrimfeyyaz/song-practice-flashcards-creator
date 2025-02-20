@@ -38,4 +38,8 @@ export interface SongContextType {
    * Generates audio for a specific lyric line.
    */
   generateAudioForLine: (index: number) => Promise<void>;
+  /** 
+   * Exports the current analysis to Anki decks.
+   */
+  exportToAnki: () => Promise<void>;
 }

@@ -2,15 +2,26 @@ import { useSongContext } from '../../context/useSongContext';
 import { Button } from '../../components/Button';
 import { SongContext } from './components/SongContext';
 import { LyricsAnalysis } from './components/LyricsAnalysis';
+import { useState } from 'react';
 
 /**
  * Displays the complete analysis results for a song.
  */
 export function AnalysisResults() {
-  const { analysisResult } = useSongContext();
+  const { analysisResult, exportToAnki } = useSongContext();
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleNewSong = () => {
     window.location.reload();
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await exportToAnki();
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (!analysisResult) return null;
@@ -22,10 +33,15 @@ export function AnalysisResults() {
       <SongContext analysis={analysisResult} />
       <LyricsAnalysis analysis={analysisResult} />
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center gap-4">
         <Button onClick={handleNewSong}>
           New Song
         </Button>
+        <Button 
+          onClick={handleExport}
+          isLoading={isExporting}
+          title={isExporting ? 'Exporting...' : 'Export to Anki'}
+        />
       </div>
     </div>
   );
