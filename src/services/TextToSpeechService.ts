@@ -47,7 +47,7 @@ class TextToSpeechService {
       throw new Error('No audio stream returned from Polly.');
     }
 
-    return new Uint8Array(await response.AudioStream.transformToByteArray());
+    return await response.AudioStream.transformToByteArray();
   }
 
   /**
