@@ -1,4 +1,4 @@
-import { type LyricsAnalysis } from '../../../services/types';
+import { type LyricsAnalysis } from '../../../services/LyricsAnalysisService';
 
 type SongContextProps = {
   /** The song analysis data. */

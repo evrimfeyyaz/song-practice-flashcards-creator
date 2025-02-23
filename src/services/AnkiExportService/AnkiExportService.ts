@@ -1,8 +1,9 @@
 import { Deck, Model, Package } from 'genanki-js';
-import { LyricsAnalysis, AnkiDecks, Models } from './types';
+import { AnkiDecks, Models } from './types';
 import initSqlJs from 'sql.js';
 import wasm from 'sql.js/dist/sql-wasm.wasm?url';
-import { generateStableHash } from '../utils/hash';
+import { generateStableHash } from '../../utils/hash';
+import { LyricsAnalysis } from '../LyricsAnalysisService';
 
 const SQL_JS = await initSqlJs({
   locateFile: () => wasm,

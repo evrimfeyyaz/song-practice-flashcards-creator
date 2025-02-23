@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { type LyricLine as LyricLineType } from '../../../services/types';
+import { type LyricLine as LyricLineType } from '../../../services/LyricsAnalysisService';
 import { PlayButton } from '../../../components/PlayButton';
 
 type LyricLineProps = {

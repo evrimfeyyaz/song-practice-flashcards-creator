@@ -3,7 +3,7 @@ import { Polly, VoiceId, LanguageCode } from '@aws-sdk/client-polly';
 /**
  * Service for synthesizing speech from text using Amazon Polly.
  */
-class TextToSpeechService {
+export class TextToSpeechService {
   private client: Polly;
   private voiceCache: Map<string, string> = new Map();
 
@@ -82,5 +82,3 @@ class TextToSpeechService {
     return voiceId;
   }
 }
-
-export default TextToSpeechService; 

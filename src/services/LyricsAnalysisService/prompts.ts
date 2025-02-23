@@ -1,38 +1,15 @@
-import OpenAI from 'openai';
-import { LyricsAnalysis } from './types';
-
-/**
- * Service for analyzing song lyrics using OpenAI API.
- */
-class LyricsAnalysisService {
-  private openai: OpenAI;
-  private readonly systemPrompt = `
+export const SYSTEM_PROMPT = `
 You are a multilingual linguistics and cultural expert with specialized knowledge in phonetics, language translation, and music history. 
 You provide concise, clear, and accurate responses. 
 You always format your final response in valid JSON, without additional commentary or explanations beyond what is requested.`;
 
-  /**
-   * Creates a new LyricsAnalysisService instance.
-   * @param apiKey - OpenAI API key.
-   */
-  constructor(apiKey: string) {
-    this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-  }
-
-  /**
-   * Generates the user prompt for the OpenAI API.
-   * @param songName - Name of the song.
-   * @param lyrics - Lyrics to analyze.
-   * @returns Formatted user prompt.
-   */
-  private generateUserPrompt(songName: string, lyrics: string): string {
-    return `
+export const LYRICS_ANALYSIS_PROMPT = `
 Please analyze the following song and produce structured JSON data as specified below.
 
-Song name: ${songName}
+Song name: \${songName}
 
 Lyrics (each line on a separate line):
-${lyrics}
+\${lyrics}
 
 Required Output:
 1. Include a "songName" field with the name of the song. Type: string.
@@ -50,37 +27,3 @@ Notes:
 - Include the song name in the lyrics array as the first line.
 - If the song is a duet, include the name of the other singer in the "generalContextInformation" field.
 - And most importantly, don't skip any lines. Make sure to include all the lines in the lyrics array.`;
-  }
-
-  /**
-   * Analyzes the given song lyrics.
-   * @param songName - Name of the song.
-   * @param lyrics - Lyrics to analyze.
-   * @returns Analysis of the lyrics.
-   */
-  public async analyzeLyrics(songName: string, lyrics: string): Promise<LyricsAnalysis> {
-    try {
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: this.systemPrompt },
-          { role: 'user', content: this.generateUserPrompt(songName, lyrics) }
-        ],
-        temperature: 0,
-        response_format: { type: 'json_object' }
-      });
-
-      const result = response.choices[0].message.content;
-      if (!result) {
-        throw new Error('No response from OpenAI API.');
-      }
-
-      return JSON.parse(result) as LyricsAnalysis;
-    } catch (error) {
-      console.error('Error analyzing lyrics:', error);
-      throw new Error('Failed to analyze lyrics.');
-    }
-  }
-}
-
-export default LyricsAnalysisService; 

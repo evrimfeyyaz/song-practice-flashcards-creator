@@ -1,4 +1,4 @@
-import { LyricsAnalysis } from "../services/types";
+import { LyricsAnalysis } from "../services/LyricsAnalysisService";
 
 /** 
  * Represents the basic data structure for a song.

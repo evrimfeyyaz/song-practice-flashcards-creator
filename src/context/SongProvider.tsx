@@ -1,10 +1,10 @@
 import { ReactNode, useState, useEffect, useCallback, useRef } from 'react';
 import { SongContext } from './SongContext';
 import { SongData } from './types';
-import LyricsAnalysisService from '../services/LyricsAnalysisService';
-import TextToSpeechService from '../services/TextToSpeechService';
-import { LyricsAnalysis } from '../services/types';
+import { LyricsAnalysisService, LyricsAnalysis } from '../services/LyricsAnalysisService';
+import { TextToSpeechService } from '../services/TextToSpeechService';
 import { AnkiExportService } from '../services/AnkiExportService';
+import { OpenAI } from 'openai';
 
 /**
  * Provider component for song-related state management.
@@ -28,7 +28,11 @@ export function SongProvider({ children }: { children: ReactNode }) {
     setIsAnalyzing(true);
     setError(null);
     try {
-      const analyzer = new LyricsAnalysisService(import.meta.env.VITE_OPENAI_API_KEY);
+      const openai = new OpenAI({
+        apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+        dangerouslyAllowBrowser: true
+      });
+      const analyzer = new LyricsAnalysisService(openai);
       const result = await analyzer.analyzeLyrics(songTitle, lyrics);
       setAnalysisResult(result);
       goToNextStep();

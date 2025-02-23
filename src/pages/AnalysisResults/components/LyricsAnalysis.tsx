@@ -1,5 +1,5 @@
 import { useSongContext } from '../../../context/useSongContext';
-import { type LyricsAnalysis as LyricsAnalysisType } from '../../../services/types';
+import { type LyricsAnalysis as LyricsAnalysisType } from '../../../services/LyricsAnalysisService';
 import { LyricLine } from './LyricLine';
 
 type LyricsAnalysisProps = {
