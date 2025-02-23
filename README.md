@@ -10,8 +10,13 @@ A web application that helps you practice and learn songs by analyzing lyrics, p
 
 ## Screenshots
 
+### Analysis page
 ![Analysis page showing lyrics analysis and Anki export](./screenshots/analysis.png)
+
+### Pronunciation deck practice in Anki
 ![Pronunciation deck practice in Anki](./screenshots/pronunciation-deck.png)
+
+### Translation deck practice in Anki
 ![Translation deck practice in Anki](./screenshots/translation-deck.png)
 
 ## Setup
