@@ -2,6 +2,7 @@ import { Deck, Model, Package } from 'genanki-js';
 import { LyricsAnalysis, AnkiDecks, Models } from './types';
 import initSqlJs from 'sql.js';
 import wasm from 'sql.js/dist/sql-wasm.wasm?url';
+import { generateStableHash } from '../utils/hash';
 
 const SQL_JS = await initSqlJs({
   locateFile: () => wasm,
@@ -12,39 +13,6 @@ const PRONUNCIATION_MODEL_ID = '1740052059953';
 const TRANSLATION_MODEL_ID = '1740052059954';
 
 export class AnkiExportService {
-  /**
-   * Creates a stable hash number from a string that falls within Anki's model ID range (0 to 2^31).
-   * This is a variant of the djb2 hash algorithm created by Daniel J. Bernstein.
-   * 
-   * The algorithm works by:
-   * 1. Starting with a seed value
-   * 2. For each character: hash = (hash * 31) + charCode
-   * 3. Converting to 32-bit integer
-   * 4. Ensuring output is positive and within Anki's range
-   * 
-   * Properties:
-   * - Deterministic: Same input and seed always produces same hash
-   * - Well-distributed: Hash values spread evenly across the range
-   * - Fast: Uses simple arithmetic operations
-   * - Not cryptographically secure: Do not use for security purposes
-   * 
-   * @param str The string to hash.
-   * @param seed An optional seed to create different hashes for the same string.
-   * @returns A number between 0 and 2^31 - 1 (0x7FFFFFFF).
-   */
-  private static generateStableHash(str: string, seed = 0): number {
-    let hash = seed;
-    
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char; // Equivalent to: hash = (hash * 31) + char
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    
-    // Ensure the hash is positive and within Anki's model ID range (0 to 2^31 - 1)
-    return Math.abs(hash) % 0x7FFFFFFF;
-  }
-
   /**
    * Creates and downloads Anki decks from lyrics analysis.
    * @param analysis The complete lyrics analysis data.
@@ -99,8 +67,8 @@ export class AnkiExportService {
   private static createDecks(analysis: LyricsAnalysis): AnkiDecks {
     // Generate stable deck IDs based on song content
     const lyricsText = analysis.lyrics.map(line => line.line).join('\n');
-    const pronunciationDeckId = this.generateStableHash(lyricsText, 1); // Seed 1 for pronunciation
-    const translationDeckId = this.generateStableHash(lyricsText, 2); // Seed 2 for translation
+    const pronunciationDeckId = generateStableHash(lyricsText, 1); // Seed 1 for pronunciation
+    const translationDeckId = generateStableHash(lyricsText, 2); // Seed 2 for translation
 
     return {
       pronunciation: new Deck(
@@ -145,7 +113,7 @@ export class AnkiExportService {
           audioData ? `[sound:${audioFilename}]` : ''
         ],
         [], // Empty tags array
-        this.generateStableHash(`pronunciation_${line.line}`, index).toString() // Stable GUID
+        generateStableHash(`pronunciation_${line.line}`, index).toString() // Stable GUID
       );
       decks.pronunciation.addNote(pronunciationNote);
 
@@ -156,7 +124,7 @@ export class AnkiExportService {
           line.literalTranslationExplanation
         ],
         [], // Empty tags array
-        this.generateStableHash(`translation_${line.line}`, index).toString() // Stable GUID
+        generateStableHash(`translation_${line.line}`, index).toString() // Stable GUID
       );
       decks.translation.addNote(translationNote);
     }
