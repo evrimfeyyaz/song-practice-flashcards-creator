@@ -5,6 +5,7 @@ import { LyricsAnalysisService, LyricsAnalysis } from '../services/LyricsAnalysi
 import { TextToSpeechService } from '../services/TextToSpeechService';
 import { AnkiExportService } from '../services/AnkiExportService';
 import { OpenAI } from 'openai';
+import { Polly } from '@aws-sdk/client-polly';
 
 /**
  * Provider component for song-related state management.
@@ -21,7 +22,7 @@ export function SongProvider({ children }: { children: ReactNode }) {
   const [loadingAudioLines, setLoadingAudioLines] = useState<Set<number>>(new Set());
   const hasAudioGenerationRunRef = useRef(false);
 
-  const tts = useRef<TextToSpeechService | null>(new TextToSpeechService()).current;
+  const ttsRef = useRef<TextToSpeechService | null>(null);
 
   const analyzeSong = async (songTitle: string, lyrics: string) => {
     setSongData({songTitle, lyrics});
@@ -53,12 +54,12 @@ export function SongProvider({ children }: { children: ReactNode }) {
     if (!analysisResult) return;
 
     const line = analysisResult.lyrics[index];
-    if (!line || line.ipaAudioUrl || !tts) return;
+    if (!line || line.ipaAudioUrl || !ttsRef.current) return;
     
     setLoadingAudioLines(prev => new Set(prev).add(index));
     
     try {
-      const audioContent = await tts.synthesizeIPA(line.ipa, analysisResult.languageCode);
+      const audioContent = await ttsRef.current.synthesizeIPA(line.ipa, analysisResult.languageCode);
       const blob = new Blob([audioContent], { type: 'audio/mp3' });
       const ipaAudioUrl = URL.createObjectURL(blob);
       
@@ -77,10 +78,18 @@ export function SongProvider({ children }: { children: ReactNode }) {
         return newSet;
       });
     }
-  }, [analysisResult, tts]);
+  }, [analysisResult]);
 
   const generateAudioForLines = useCallback(async () => {
     if (!analysisResult) return;
+
+    ttsRef.current = new TextToSpeechService(new Polly({
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+        secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+      },
+    }));
 
     for (let i = 0; i < analysisResult.lyrics.length; i++) {
       await generateAudioForLine(i);
