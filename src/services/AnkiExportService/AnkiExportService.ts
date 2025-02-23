@@ -1,17 +1,14 @@
-import { Deck, Model, Package } from 'genanki-js';
-import { AnkiDecks, Models } from './types';
+import { Deck, Package } from 'genanki-js';
+import { AnkiDecks } from './types';
 import initSqlJs from 'sql.js';
 import wasm from 'sql.js/dist/sql-wasm.wasm?url';
 import { generateStableHash } from '../../utils/hash';
 import { LyricsAnalysis } from '../LyricsAnalysisService';
+import { PRONUNCIATION_MODEL, TRANSLATION_MODEL } from './models';
 
 const SQL_JS = await initSqlJs({
   locateFile: () => wasm,
 });
-
-// If you change the models, update the IDs below by incrementing the version number.
-const PRONUNCIATION_MODEL_ID = '1740052059953';
-const TRANSLATION_MODEL_ID = '1740052059954';
 
 export class AnkiExportService {
   /**
@@ -25,38 +22,7 @@ export class AnkiExportService {
     pkg.addDeck(decks.pronunciation);
     pkg.addDeck(decks.translation);
     
-    await this.processLyrics(analysis, decks, pkg, {
-      pronunciation: new Model({
-        name: 'Song Pronunciation Model',
-        id: PRONUNCIATION_MODEL_ID,
-        flds: [
-          { name: 'Original' },
-          { name: 'IPA' },
-          { name: 'Audio' }
-        ],
-        tmpls: [{
-          name: 'Pronunciation Card',
-          qfmt: '{{Original}}',
-          afmt: '{{FrontSide}}<hr id="answer">IPA: {{IPA}}<br><br>{{Audio}}'
-        }],
-        req: [[0, "all", [0]]]
-      }),
-      translation: new Model({
-        name: 'Song Translation Model',
-        id: TRANSLATION_MODEL_ID,
-        flds: [
-          { name: 'Original' },
-          { name: 'Translation' },
-          { name: 'LiteralMeaning' }
-        ],
-        tmpls: [{
-          name: 'Translation Card',
-          qfmt: '{{Original}}',
-          afmt: '{{FrontSide}}<hr id="answer">Translation: {{Translation}}<br><br>Literal Meaning: {{LiteralMeaning}}'
-        }],
-        req: [[0, "all", [0]]]
-      })
-    });
+    await this.processLyrics(analysis, decks, pkg);
     await this.downloadDecks(analysis, pkg);
   }
 
@@ -94,7 +60,6 @@ export class AnkiExportService {
     analysis: LyricsAnalysis, 
     decks: AnkiDecks,
     pkg: Package,
-    models: Models
   ) {
     for (const [index, line] of analysis.lyrics.entries()) {
       if (!line.line.trim()) continue;
@@ -106,29 +71,68 @@ export class AnkiExportService {
         pkg.addMedia(audioData, audioFilename);
       }
 
-      // Create notes with proper field arrays
-      const pronunciationNote = models.pronunciation.note(
-        [
-          line.line,
-          line.ipa,
-          audioData ? `[sound:${audioFilename}]` : ''
-        ],
-        [], // Empty tags array
-        generateStableHash(`pronunciation_${line.line}`, index).toString() // Stable GUID
+      const pronunciationNote = this.createPronunciationNote(
+        line,
+        index,
+        audioFilename,
+        audioData
       );
       decks.pronunciation.addNote(pronunciationNote);
 
-      const translationNote = models.translation.note(
-        [
-          line.line,
-          line.translation,
-          line.literalTranslationExplanation
-        ],
-        [], // Empty tags array
-        generateStableHash(`translation_${line.line}`, index).toString() // Stable GUID
+      const translationNote = this.createTranslationNote(
+        line,
+        index
       );
       decks.translation.addNote(translationNote);
     }
+  }
+
+  /**
+   * Creates a pronunciation note for Anki.
+   * @param line The lyrics line containing the original text and IPA.
+   * @param model The pronunciation model to create the note from.
+   * @param index The index of the line in the lyrics.
+   * @param audioFilename The filename of the associated audio file.
+   * @param audioData The audio data buffer, if available.
+   * @returns The created Anki note.
+   */
+  private static createPronunciationNote(
+    line: LyricsAnalysis['lyrics'][number],
+    index: number,
+    audioFilename: string,
+    audioData: ArrayBuffer | undefined
+  ) {
+    return PRONUNCIATION_MODEL.note(
+      [
+        line.line,
+        line.ipa,
+        audioData ? `[sound:${audioFilename}]` : ''
+      ],
+      [], // Empty tags array
+      generateStableHash(`pronunciation_${line.line}`, index).toString() // Stable GUID
+    );
+  }
+
+  /**
+   * Creates a translation note for Anki.
+   * @param line The lyrics line containing the original text and translations.
+   * @param model The translation model to create the note from.
+   * @param index The index of the line in the lyrics.
+   * @returns The created Anki note.
+   */
+  private static createTranslationNote(
+    line: LyricsAnalysis['lyrics'][number],
+    index: number
+  ) {
+    return TRANSLATION_MODEL.note(
+      [
+        line.line,
+        line.translation,
+        line.literalTranslationExplanation
+      ],
+      [], // Empty tags array
+      generateStableHash(`translation_${line.line}`, index).toString() // Stable GUID
+    );
   }
 
   /**
@@ -159,14 +163,13 @@ export class AnkiExportService {
     pkg: Package
   ) {
     if (!SQL_JS) {
-      throw new Error('Dependencies not initialized. Call initializeAnkiDependencies() first.');
+      throw new Error('SQL.js not initialized.');
     }
 
     pkg.setSqlJs(new SQL_JS.Database());
 
     try {
-      await pkg.writeToFile(`${analysis.songName.replace(/\s+/g, '_')}.apkg`);
-      console.log('Anki package generated successfully');
+      pkg.writeToFile(`${analysis.songName.replace(/\s+/g, '_')}.apkg`);
     } catch (error) {
       throw new Error(`Failed to generate Anki package: ${error}`);
     }
