@@ -47,9 +47,8 @@ export function EnterSong() {
         <Button
           onClick={handleAnalyze}
           disabled={isAnalyzeDisabled}
-        >
-          Analyze Lyrics
-        </Button>
+          title="Analyze Lyrics"
+        />
       </div>
     </>
   );

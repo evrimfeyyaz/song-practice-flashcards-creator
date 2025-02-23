@@ -34,14 +34,8 @@ export function AnalysisResults() {
       <LyricsAnalysis analysis={analysisResult} />
 
       <div className="mt-8 flex justify-center gap-4">
-        <Button onClick={handleNewSong}>
-          New Song
-        </Button>
-        <Button 
-          onClick={handleExport}
-          isLoading={isExporting}
-          title={isExporting ? 'Exporting...' : 'Export to Anki'}
-        />
+        <Button onClick={handleNewSong} title="New Song" />
+        <Button onClick={handleExport} isLoading={isExporting} title={isExporting ? 'Exporting...' : 'Export to Anki'} />
       </div>
     </div>
   );

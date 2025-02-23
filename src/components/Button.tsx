@@ -8,7 +8,7 @@ type ButtonProps = {
 /**
  * A reusable button component with consistent styling.
  */
-export function Button({ className, disabled, isLoading, children, title, ...props }: ButtonProps) {
+export function Button({ className, disabled, isLoading, title, ...props }: ButtonProps) {
   const baseClasses = "px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors";
   
   const buttonClasses = disabled || isLoading
@@ -19,11 +19,10 @@ export function Button({ className, disabled, isLoading, children, title, ...pro
     <button
       className={`${baseClasses} ${buttonClasses} ${className || ''} relative`}
       disabled={disabled || isLoading}
-      title={title}
       {...props}
     >
       <span className={`flex items-center justify-center gap-2 ${isLoading ? 'invisible' : ''}`}>
-        {children}
+        {title}
       </span>
       
       {isLoading && (
