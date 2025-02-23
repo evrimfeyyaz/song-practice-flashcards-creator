@@ -4,26 +4,13 @@ import { Polly, VoiceId, LanguageCode } from '@aws-sdk/client-polly';
  * Service for synthesizing speech from text using Amazon Polly.
  */
 export class TextToSpeechService {
-  private client: Polly;
   private voiceCache: Map<string, string> = new Map();
 
-  constructor() {
-    const accessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
-    const secretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
-    const region = import.meta.env.VITE_AWS_REGION;
-
-    if (!accessKeyId || !secretAccessKey || !region) {
-      throw new Error('Missing required AWS credentials in Vite environment variables.');
-    }
-
-    this.client = new Polly({
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-      region,
-    });
-  }
+  /**
+   * Creates a new TextToSpeechService instance.
+   * @param client - The AWS Polly client to use for speech synthesis.
+   */
+  constructor(private client: Polly) {}
 
   /**
    * Synthesizes speech from IPA text.

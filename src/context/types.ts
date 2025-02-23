@@ -1,8 +1,6 @@
 import { LyricsAnalysis } from "../services/LyricsAnalysisService";
 
-/** 
- * Represents the basic data structure for a song.
- */
+/** Represents the basic data structure for a song. */
 export type SongData = {
   /** The title of the song. */
   songTitle: string;
@@ -22,24 +20,14 @@ export interface SongContextType {
   isAnalyzing: boolean;
   /** Error message if any. */
   error: string | null;
-  /** 
-   * Analyzes the current song data.
-   */
+  /** Analyzes the current song data. */ 
   analyzeSong: (songTitle: string, lyrics: string) => Promise<void>;
-  /** 
-   * Advances to the next step in the workflow.
-   */
+  /** Advances to the next step in the workflow. */ 
   goToNextStep: () => void;
-  /** 
-   * The set of lyric line indices for which audio is currently being loaded.
-   */
+  /** The set of lyric line indices for which audio is currently being loaded. */
   loadingAudioLines: Set<number>;
-  /** 
-   * Generates audio for a specific lyric line.
-   */
+  /** Generates audio for a specific lyric line. */ 
   generateAudioForLine: (index: number) => Promise<void>;
-  /** 
-   * Exports the current analysis to Anki decks.
-   */
+  /** Exports the current analysis to Anki decks. */ 
   exportToAnki: () => Promise<void>;
 }
